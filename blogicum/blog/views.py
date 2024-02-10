@@ -53,17 +53,21 @@ def index(request):
     return render(request, template, context)
 
 
+dict_posts = {}
+for post in posts:
+    dict_posts[post['id']] = post['text']
+
+
 def post_detail(request, id):
-    post = [post for post in posts if post['id'] == id]
-    if not post:
-        raise Http404('неверный id поста')
-    context = {'post': post[0]}
+    if id not in dict_posts:
+        raise Http404(f'неверный id({id}) поста')
+    context = {'post': posts[id]}
     return render(request, 'blog/detail.html', context)
 
 
 def category_posts(request, category_slug):
-    sorted_posts = [post for post in posts if post['category']
+    filter_posts = [post for post in posts if post['category']
                     == category_slug]
     context = {'category': category_slug,
-               'posts': sorted_posts}
+               'posts': filter_posts}
     return render(request, 'blog/category.html', context)
